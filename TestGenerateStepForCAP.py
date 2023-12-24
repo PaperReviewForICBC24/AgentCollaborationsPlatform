@@ -34,8 +34,8 @@ def gpt_call(messages=""):
 
 if __name__ == '__main__':
     messages = [
-        {'role': 'system', 'content': 'I am an AI agent operating in the collaboration platform which runs a smart contract on Ethereum. This smart contract offers a wide array of functions, each serving specific purpose: Agent Registered Function allows agents to become a user in smart contracts. Query Ability Function allows the user to query details information of user by input ability. The Get Task With ID Function allows the user to obtain details information about the task by inputting the task ID. Post Task Function allows the user to post their task to smart contract. Deploy Task Function allows the user to deploy a task to another user in the smart contract. Rating Worker Function allows the user to rate a worker of the task. The Get Users Function allows the user to obtain information about all users. The Get Tasks Function allows the user to obtain information about all tasks.'},
-        {'role': 'assistant', 'content': 'You can ask me to do various tasks and I will tell you the sequence of actions I would do to accomplish your task.'},
+        {'role': 'system', 'content': 'I am an AI agent operating in the collaboration platform which runs a smart contract on Ethereum. This smart contract offers a wide array of functions, each serving specific purpose: Agent Registered Function allows agents to become a user in smart contracts. Query Ability Function allows the user to query details information of user by input ability. The Get Task With ID Function allows the user to obtain details information about the task by inputting the task ID. Post Task Function allows the user to post their task to smart contract. Deploy Task Function allows the user to deploy a task to another user in the smart contract. Request Task Function allows the user to request a task from the task owner to become a worker in the smart contract. Rating Worker Function allows the user to rate a worker of the task. The Get Users Function allows the user to obtain information about all users. The Get Tasks Function allows the user to obtain information about all tasks.'},
+        {'role': 'system', 'content': 'You can ask me to do various tasks and I will tell you the sequence of actions I would do to accomplish your task.'},
         {'role': 'user', 'content': 'How would you join the smart contract by input ability is {I am a teacher} and contact is {test001@gmail.com} ?'},
         {'role': 'assistant','content': '1. call Agent Registered Function with ability is {I am a teacher} and contact is {test001@gmail.com}, 2. done.'},
         {'role': 'user', 'content': 'How would you post a task in smart contract by input requirement is {I have a question} and price is {10}?'},
@@ -44,6 +44,8 @@ if __name__ == '__main__':
         # {'role': 'assistant', 'content': '1. call  Query Ability Function with ability is {math}, 2. done.'},
         # {'role': 'user', 'content': 'How would you deploy a task to other user in smart contract by input ID is {1}?'},
         # {'role': 'assistant', 'content': '1. call  Deploy Task Function with ID is {1}, 2. done.'},
+        # {'role': 'user','content': 'How would you request a task to from task owner become a worker in smart contract by input ID is {1}?'},
+        # {'role': 'assistant', 'content': '1. call Request Task Function with ID is {1}, 2. done.'},
         # {'role': 'user', 'content': 'How would you get the information of task by input task ID is {8}? '},
         # {'role': 'assistant', 'content': '1. call Get Task With ID Function with task ID is {9}, 2. done.'}, #只给一个输入的例子就能生成一样的
         # {'role': 'user', 'content': 'How would you get the information of all tasks?'}
@@ -61,8 +63,3 @@ if __name__ == '__main__':
             print("The program has been completed......")
         else:
             TestACPwithGPT.run_conversation_call_functions(call)
-
-
-
-
-

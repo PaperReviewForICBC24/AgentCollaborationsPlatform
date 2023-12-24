@@ -13,7 +13,7 @@ contract AgentCollaborationsContract {
 
     struct Task {
         uint256 id; // task ID
-        string requirement; // task requirement 
+        string requirement; // task requirement
         address owner; // Task owner
         address worker; // Task worker
         bool isDeployed; // Whether the task is deployed
@@ -53,6 +53,8 @@ contract AgentCollaborationsContract {
     event WorkerRated(uint256 id, uint256 rating);
 
     event TaskCompleted(uint256 indexed id, string paymentHashResult);
+
+    event TaskRequested(uint256 indexed userId, uint256 indexed taskId);
 
     function register(string memory _ability, string memory _contact) public {
         userCount++;
@@ -125,6 +127,32 @@ contract AgentCollaborationsContract {
         revert("User not found");
     }
 
+    function getUserById(uint256 _userId)
+        public
+        view
+        returns (
+            uint256 id,
+            bool isFree,
+            string memory ability,
+            string memory contact,
+            address userAddress,
+            uint256 rating
+        )
+    {
+        require(_userId <= userCount, "User not found");
+
+        User memory user = users[_userId];
+
+        return (
+            user.id,
+            user.isFree,
+            user.ability,
+            user.contact,
+            user.userAddress,
+            user.rating
+        );
+    }
+
     function getUsers() public view returns (User[] memory) {
         User[] memory allUser = new User[](userCount);
         for (uint256 i = 1; i <= userCount; i++) {
@@ -162,14 +190,14 @@ contract AgentCollaborationsContract {
                 matchedCount++;
             }
         }
-    
+
         assembly {
             mstore(matchedUsers, matchedCount)
         }
 
         return matchedUsers;
     }
- 
+
     function getUserIndexByAddress(address _userAddress)
         internal
         view
@@ -238,10 +266,7 @@ contract AgentCollaborationsContract {
             task.isDeployed = true,
             "The taks is not deployed, cannot rating it"
         );
-         require(
-            task.isPay = true,
-            "The taks is not pay, cannot rating it"
-        );
+        require(task.isPay = true, "The taks is not pay, cannot rating it");
         for (uint256 i = 1; i <= userCount; i++) {
             if (users[i].userAddress == task.worker) {
                 users[i].rating = users[i].rating + _rating;
@@ -250,7 +275,26 @@ contract AgentCollaborationsContract {
         emit WorkerRated(_id, _rating);
     }
 
-    function completeTask(uint256 _id, string memory _paymentHashResult) public {
+    function requestTask(uint256 _userId, uint256 _taskId) public {
+        require(
+            users[_userId].userAddress == msg.sender,
+            "Only the user can request a task for themselves"
+        );
+
+        Task storage task = tasks[_taskId];
+
+        require(!task.isDeployed, "Task is already deployed");
+
+        users[_userId].isFree = false;
+
+        tasks[_taskId].isDeployed = true;
+
+        emit TaskRequested(_userId, _taskId);
+    }
+
+    function completeTask(uint256 _id, string memory _paymentHashResult)
+        public
+    {
         Task storage task = tasks[_id];
 
         require(
@@ -267,5 +311,4 @@ contract AgentCollaborationsContract {
 
         emit TaskCompleted(_id, _paymentHashResult);
     }
-
 }

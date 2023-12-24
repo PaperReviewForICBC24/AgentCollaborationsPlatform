@@ -134,10 +134,6 @@ tools = [
                         "type": "integer",
                         "description": "The id of the task"
                     },
-                    "address": {
-                        "type": "string",
-                        "description": "The address of the worker of task"
-                    }
                 },
                 "required": ["id"]
             }
@@ -146,21 +142,17 @@ tools = [
 {
         "type": "function",
         "function": {
-            "name": "DeployTaskWithWorkerFunction",
-            "description": "The owner of task is deployed task to worker in the system",
+            "name": "RequestTaskFunction",
+            "description": "The worker to request a task from task owner become to worker in the system",
             "parameters": {
                 "type": "object",
                 "properties": {
                     "id": {
                         "type": "integer",
-                        "description": "The id of the task"
+                        "description": "The id of user"
                     },
-                    "address": {
-                        "type": "string",
-                        "description": "The address of the worker of task"
-                    }
                 },
-                "required": ["id","address"]
+                "required": ["id"]
             }
         }
     },
@@ -193,7 +185,7 @@ tools = [
 def run_conversation_call_functions(contents):
     messages = [{"role": "user", "content": f"How to {contents} in system"}]
     response = openai.ChatCompletion.create(
-        model="gpt-3.5-turbo-1106",
+        model="gpt-4",
         messages=messages,
         tools=tools,
         tool_choice="auto",
@@ -212,7 +204,7 @@ def run_conversation_call_functions(contents):
                 'QueryAbilityFunction': MappingFunctions.QueryAbilityFunction,
                 'PostTaskFunction': MappingFunctions.PostTaskFunction,
                 'DeployTaskFunction': MappingFunctions.DeployTaskFunction,
-                'DeployTaskWithWorkerFunction':MappingFunctions.DeployTaskWithWorkerFunction,
+                'RequestTaskFunction': MappingFunctions.RequestTaskFunction,
                 'RatingWorkerFunction': MappingFunctions.RatingWorkerFunction,
                 'getTaskWithIDFunction': MappingFunctions.getTaskWithIDFunction,
                 'getTasksFunction': MappingFunctions.getTasksFunction,
@@ -263,11 +255,11 @@ def run_conversation_call_functions(contents):
 # tx = "Call the Post Task Function with requirement is {I have a question} and price is {10}"
 # print(run_conversation_call_functions(tx))
 
-# tx = "call Deploy Task Function, id is 6"
+# tx = "call Request Task Function with ID is {1}"
 # print(run_conversation_call_functions(tx))
 
-# tx = "call Deploy Task With Worker Function, id is {6} and worker is {0x3447..................}"
-# print(run_conversation_call_functions(tx))
+tx = "call  Deploy Task Function with ID is {1}"
+print(run_conversation_call_functions(tx))
 
 # tx = "call Rating Worker Function"
 # print(run_conversation_call_functions(tx))

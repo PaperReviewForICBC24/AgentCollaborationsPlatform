@@ -2,26 +2,27 @@ import jsonschema
 from web3 import Web3
 import json
 import OwnerSearchMultiWorkers
+import WorkerSearchMultiTasks
 
-# web3 instance, Needs to be replaced with the URL of your Ethereum node
-w3 = Web3(Web3.HTTPProvider("https://mainnet.infura.io/v3/YOUR_INFURA_API_KEY"))
+# web3 instance, Needs to be replaced with the URL of GANACHE
+w3 = Web3(Web3.HTTPProvider("YOUR_RPC_SERVER_IN_GANACHE"))
 # Test is connected Ganache
 print(f'Is connected Ganache : {w3.is_connected()}')
 
 # Needs to be replaced with your smart contract ABI
-with open('contract_abi.json', 'r') as f:
+with open('YOUR_CONTRACT_ABI_FILE_JSON', 'r') as f:
     contract_abi = json.load(f)
 
 # Need to be replaced with the address of the smart contract
-contract_address = "0x1234567890123456789012345678901234567890"
+contract_address = "YOUR_SMART_CONTRACT_ADDRESS"
 check_address = Web3.to_checksum_address(contract_address)
 
 contract = w3.eth.contract(address=check_address, abi=contract_abi)
 
 # Need to be replaced with the your address
-account = "0x3447E97890123456789012345678901234567890"
+account = "YOUR_ADDRESS_IN_GANACHE"
 # Need to be replaced with the your private key
-private_key = "0x986e123456789012345678901234567890123456789012345678901234567890"
+private_key = "YOUR_ACCOUNT_PRIVATE_KEY"
 
 def get_task_arguments():
     with open("TaskPost.json", 'r') as file:
@@ -193,7 +194,7 @@ def deploy_task(params):
     id = params["id"]
     # Get parameters from Function Calling
     params = {"id": id}
-    task_requirement = get_task_with_ID(params)  # Obtain the task by call getTaskWithID() function
+    task_requirement = get_task_with_ID(params)  # Obtain the task by call get_task_with_ID() function
     address = OwnerSearchMultiWorkers.find_worker_from_requirement(task_requirement)  # Obtain the worker address that can be used to deploy tasks to the worker
 
     print(address)
@@ -225,6 +226,53 @@ def deploy_task(params):
 
     return transaction_receipt
 
+request_task_schema = {
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+    },
+    "required": ["id"]
+}
+
+# This function is used to 'worker driven' to request task to deploy
+def request_task(params):
+    jsonschema.validate(params, request_task_schema)
+
+    # Destructuring parameters
+    id = params["id"]
+    # Get parameters from Function Calling
+    params = {"id":id}
+    user_ability=get_ability_with_ID(params)# Obtain the task by call get_ability_with_ID() function
+    task_ID=WorkerSearchMultiTasks.find_owner_from_task(user_ability)  # Obtain the task ID that worker can become a worker
+
+    print(task_ID)
+
+    transaction_data = contract.functions.requestTask(id,task_ID).build_transaction({
+        'from': account,
+        'gas': 1000000,
+        'gasPrice': w3.to_wei('10', 'gwei'),
+        'nonce': w3.eth.get_transaction_count(account)
+    })
+    # Sign the transaction
+    signed_transaction = w3.eth.account.sign_transaction(transaction_data, private_key)
+
+    # Send the transaction
+    transaction_hash = w3.eth.send_raw_transaction(signed_transaction.rawTransaction)
+
+    print(f'Request a task transaction sent. Transaction Hash: {transaction_hash.hex()}')
+
+    # Wait for the transaction to be mined
+    transaction_receipt = w3.eth.wait_for_transaction_receipt(transaction_hash)
+
+    print(transaction_receipt)
+    print("RequestTaskFunction executed successfully with worker")
+
+    logs = contract.events.TaskDeployed().process_receipt(transaction_receipt)
+    for log in logs:
+        print(f"Task Deployed: {log['args']}")
+        print(log['args']['id'])
+
+    return transaction_receipt
 
 
 deploy_task_with_worker_schema = {
@@ -343,6 +391,32 @@ def get_task_with_ID(params):
     print(
         f"Task ID: {task_id}, task requirement: {task_requirement},task owner: {task_owner}, task worker: {task_worker},task is Deployed: {task_isDeployed}, task price: {task_price},task is Pay: {task_isPay}")
     return returned_tasks[1]
+
+get_user_with_ID_schema = {
+    "type": "object",
+    "properties": {
+        "id": {"type": "integer"},
+    },
+    "required": ["id"]
+}
+def get_ability_with_ID(params):
+    jsonschema.validate(params, get_user_with_ID_schema)
+
+    # Destructuring parameters
+    id = params["id"]
+
+    returned_users = contract.functions.getUserById(id).call()
+    print(returned_users)
+    user_id = returned_users[0]
+    user_isFree = returned_users[1]
+    user_ability = returned_users[2]
+    user_contract = returned_users[3]
+    user_address = returned_users[4]
+    user_rating = returned_users[5]
+    print(
+        f"User ID: {user_id}, user isFree: {user_isFree},user ability: {user_ability}, user contract: {user_contract},user address: {user_address}, user rating: {user_rating}")
+    return returned_users[2]
+
 
 get_tasks_schema = {
     "type": "object",

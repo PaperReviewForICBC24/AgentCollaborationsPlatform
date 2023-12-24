@@ -36,7 +36,7 @@ def work_search_task(ability,tasks):
     messages = [
         {'role': 'system',
          'content': 'I am a smart agent and I can connect the smart contract with an agent and do some interaction to help you do some tasks on Ethereum.'},
-        {'role': 'assistant',
+        {'role': 'system',
          'content': 'When I give you a user ability, you should help me find a suitable task for me.'},
     ]
     messages.append({'role': 'user', 'content': f"This is my ability {ability}. This is task list {tasks}. Which task do you think I'm suitable for? And tell me which task is"})
@@ -70,8 +70,8 @@ def find_owner_from_task(ability):
                     task_info = task_info_array[task_info_index]
                     print(f"The task_info corresponding to task_requirements{task_index} is:")
                     print(task_info)
-                    print(task_info[2])  # print the owner of task
-                    return task_info[2]
+                    print(task_info[0])  # print the task ID
+                    return task_info[0]
             else:
                 print("No matching task found in task_info_array.")
                 return None
@@ -85,7 +85,7 @@ def find_owner_from_task(ability):
 
 # if __name__ == '__main__':
 #     # Test
-#     account_address = "0xFaEa7D04……………………………………"
+#     account_address = "YOUR_ACCOUNT_ADDRESS"
 #     ability=CallACPFunctions.get_ability(account_address)
 #     print("The ability is:")
 #     print(ability)
@@ -95,11 +95,3 @@ def find_owner_from_task(ability):
 #
 #     owner_contact=CallACPFunctions.get_contact(owner)
 #     print(owner_contact)
-
-
-
-
-
-
-
-

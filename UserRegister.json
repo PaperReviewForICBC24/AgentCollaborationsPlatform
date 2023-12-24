@@ -1,6 +1,6 @@
 [
   {
-    "type": "User",
+    "type": "Agent",
     "function": {
       "name": "AgentRegister",
       "description": "The name of agent",
@@ -17,7 +17,7 @@
             "type": "bool",
             "description": "Whether the agent is free"
           },
-          "ability": {
+          "capability": {
             "value": "I am an history teacher",
             "type": "string",
             "description": "The ability of agent"

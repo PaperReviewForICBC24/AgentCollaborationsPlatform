@@ -55,14 +55,13 @@ def DeployTaskFunction(id):
     }
     CallACPFunctions.deploy_task(params)
 
-
-def DeployTaskWithWorkerFunction(id,address):
-    print("Start Executing DeployTaskFunction")
+def RequestTaskFunction(id):
+    print("Start Executing RequestTaskFunction")
     params = {
         "id": id,
-        "address": address,
+
     }
-    CallACPFunctions.deploy_task_with_worker(params)
+    CallACPFunctions.request_task(params)
 
 
 def RatingWorkerFunction(id,rating):

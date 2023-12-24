@@ -45,7 +45,7 @@ def owner_search_worker(requirement,workers):
     messages = [
         {'role': 'system',
          'content': 'I am a smart agent and I can connect the smart contract with an agent and do some interaction to help you do some tasks on Ethereum.'},
-        {'role': 'assistant',
+        {'role': 'system',
          'content': 'When I give you a task, you should help me find a suitable worker to do my task.'},
     ]
     messages.append({'role': 'user',
@@ -90,8 +90,8 @@ def find_worker_from_requirement(task_requirement):
 
 # if __name__ == '__main__':
 #     # Test
-#     user_info_array = CallACPFunctions.getUsers()
-#     task_info_array = CallACPFunctions.getTasks()
+#     user_info_array = CallACPFunctions.get_users()
+#     task_info_array = CallACPFunctions.get_tasks()
 #
 #     user_abilities= extract_ability(user_info_array)
 #     task_requirements=extract_requirement(task_info_array)
